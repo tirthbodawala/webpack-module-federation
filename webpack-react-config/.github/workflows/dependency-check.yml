@@ -1,0 +1,77 @@
+name: Dependency Security Check
+
+on:
+  push:
+    paths:
+      - 'package.json'
+      - 'package-lock.json'
+  pull_request:
+    paths:
+      - 'package.json'
+      - 'package-lock.json'
+  schedule:
+    # Run security check daily at midnight UTC
+    - cron: '0 0 * * *'
+
+jobs:
+  security-audit:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Run security audit
+      run: |
+        echo "🔐 Running npm security audit..."
+        npm audit --audit-level=high
+
+    - name: Check for outdated packages
+      run: |
+        echo "📊 Checking for outdated packages..."
+        npm outdated || true
+
+    - name: Run vulnerability scan with npm audit
+      run: |
+        echo "🔍 Detailed vulnerability scan..."
+        npm audit --json > audit-results.json || true
+
+    - name: Upload audit results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: security-audit-results
+        path: audit-results.json
+
+  license-check:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Install license checker
+      run: npm install -g license-checker
+
+    - name: Check licenses
+      run: |
+        echo "📄 Checking dependency licenses..."
+        license-checker --onlyAllow 'MIT;ISC;BSD;Apache-2.0;Unlicense;WTFPL' --excludePrivatePackages
