@@ -10,6 +10,7 @@ import MiniCssExtractPlugin from "mini-css-extract-plugin";
 import CopyWebpackPlugin from "copy-webpack-plugin";
 import ReactRefreshWebpackPlugin from "@pmmmwh/react-refresh-webpack-plugin";
 import ExternalTemplateRemotesPlugin from "external-remotes-plugin";
+import { ModuleFederationPlugin } from '@module-federation/enhanced/webpack';
 
 // Internal type definitions
 import { ModuleFederationOptions, WebpackInstanceType } from "./@types/types";
@@ -72,7 +73,7 @@ export function createPlugins({
   const plugins = [
     // Module Federation Plugin - enables micro-frontend architecture
     ...(moduleFederation && (Object.keys(moduleFederation ?? {}).length) ? [
-      new webpackInstance.container.ModuleFederationPlugin(moduleFederation),
+      new ModuleFederationPlugin(moduleFederation),
     ] : []),
 
     // External Template Remotes Plugin - handles external remote loading for Module Federation

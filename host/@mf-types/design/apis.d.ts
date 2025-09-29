@@ -1,0 +1,3 @@
+
+    export type RemoteKeys = 'design/Header' | 'design/Hero' | 'design/Demo' | 'design/provider' | 'design/theme';
+    type PackageType<T> = T extends 'design/theme' ? typeof import('design/theme') :T extends 'design/provider' ? typeof import('design/provider') :T extends 'design/Demo' ? typeof import('design/Demo') :T extends 'design/Hero' ? typeof import('design/Hero') :T extends 'design/Header' ? typeof import('design/Header') :any;

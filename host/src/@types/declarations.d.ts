@@ -48,3 +48,6 @@ declare module '*.mp3'  { const src: string; export default src; }
 declare module '*.wav'  { const src: string; export default src; }
 declare module '*.flac' { const src: string; export default src; }
 declare module '*.aac'  { const src: string; export default src; }
+
+// ------------------------------ Module Federation ---------------------------------
+// Module Federation remotes - types are generated in @mf-types directory

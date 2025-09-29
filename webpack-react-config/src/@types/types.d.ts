@@ -2,6 +2,7 @@
 import webpack from 'webpack';
 import type { Configuration as WebpackConfiguration } from 'webpack';
 import type { Configuration as DevServerConfiguration } from "webpack-dev-server";
+import type { ModuleFederationPluginOptions } from '@module-federation/enhanced/webpack';
 
 /**
  * Extended webpack configuration that includes dev server configuration
@@ -15,13 +16,13 @@ export type WebpackConfigWithDevServer = WebpackConfiguration & {
 /**
  * Type alias for webpack's Module Federation Plugin constructor
  */
-export type ModuleFederationPlugin = typeof webpack.container.ModuleFederationPlugin;
+// export type ModuleFederationPlugin = typeof webpack.container.ModuleFederationPlugin;
 
 /**
  * Type for Module Federation plugin options
  * Extracts the first parameter type from the ModuleFederationPlugin constructor
  */
-export type ModuleFederationOptions = ConstructorParameters<ModuleFederationPlugin>[0];
+export type ModuleFederationOptions = ModuleFederationPluginOptions;
 
 /**
  * Type alias for the webpack instance

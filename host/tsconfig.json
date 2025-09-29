@@ -11,7 +11,14 @@
     "resolveJsonModule": true,
     "strict": true,
     "skipLibCheck": true,
-    "noEmit": true
+    "noEmit": true,
+    "baseUrl": ".",
+    "paths": {
+      "app1/*": ["./@mf-types/app1/*"],
+      "app2/*": ["./@mf-types/app2/*"],
+      "shared/*": ["./@mf-types/shared/*"],
+      "design/*": ["./@mf-types/design/*"]
+    }
   },
-  "include": ["src"]
+  "include": ["src", "@mf-types"]
 }

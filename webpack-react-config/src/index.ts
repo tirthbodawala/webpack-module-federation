@@ -18,7 +18,7 @@ import type { Configuration as WebpackConfiguration } from "webpack";
 import { createModuleRules } from "./loaders.js";
 import { createPlugins, loadAnalyzerPlugins } from "./plugins.js";
 import { createOptimization } from "./optimization.js";
-import { CreateConfigOptions, WebpackConfigWithDevServer, WebpackInstanceType } from "./@types/types.js";
+import { CreateConfigOptions, ModuleFederationOptions, WebpackConfigWithDevServer, WebpackInstanceType } from "./@types/types.js";
 
 // ============================================================================
 // HELPER FUNCTIONS
@@ -38,7 +38,7 @@ const getDefaultAnalyze = (): boolean => process.env.ANALYZE === "true";
 /**
  * Configures Module Federation with sensible defaults
  */
-function configureModuleFederation(moduleFederation: any, uniqueName: string): void {
+function configureModuleFederation(moduleFederation: ModuleFederationOptions, uniqueName: string): void {
   if (moduleFederation && Object.keys(moduleFederation ?? {}).length) {
     if (!moduleFederation.name) {
       moduleFederation.name = uniqueName;
@@ -215,7 +215,7 @@ export async function createConfig(
     entry = "./src/index.tsx",
     projectRoot = process.cwd(),
     port = 3000,
-    host = "localhost",
+    host = "0.0.0.0",
     publicPath = "auto",
     htmlTemplate = "./public/index.html",
     additionalPlugins = [],
@@ -245,7 +245,7 @@ export async function createConfig(
     appNodeModules,
     pkgNodeModules,
     distPath,
-    publicPath,
+    publicPath: `http://${host}:${port}/`,
   });
 
   // Create development server configuration

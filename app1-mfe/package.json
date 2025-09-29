@@ -1,0 +1,27 @@
+{
+  "name": "@crisil/app1",
+  "version": "1.0.0",
+  "description": "App1 application for Module Federation",
+  "author": "",
+  "type": "module",
+  "scripts": {
+    "dev": "FEDERATION_DEBUG=true webpack serve",
+    "build": "cross-env NODE_ENV=production webpack",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "@types/react": "^19.1.13",
+    "@types/react-dom": "^19.1.9",
+    "cross-env": "^10.0.0",
+    "external-remotes-plugin": "^1.0.0",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "typescript": "^5.9.2",
+    "webpack": "^5.101.3",
+    "webpack-cli": "^6.0.1",
+    "webpack-dev-server": "^5.2.2"
+  },
+  "dependencies": {
+    "webpack-react-config": "file:../webpack-react-config"
+  }
+}
