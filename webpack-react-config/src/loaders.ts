@@ -1,11 +1,11 @@
 // Node.js built-in modules
-import { createRequire } from "node:module";
+import { createRequire } from 'node:module';
 
 // Third-party type definitions
-import type { RuleSetRule } from "webpack";
+import type { RuleSetRule, RuleSetUseItem } from 'webpack';
 
 // Webpack plugins
-import MiniCssExtractPlugin from "mini-css-extract-plugin";
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 
 /**
  * Create a require.resolve function for ESM environments
@@ -71,11 +71,11 @@ export function createModuleRules({ isProd, uniqueName }: ModuleRuleOptions): Ru
 function createScriptRule(isProd: boolean): RuleSetRule {
   return {
     test: /\.[jt]sx?$/i, // Match .js, .jsx, .ts, .tsx files (case insensitive)
-    type: "javascript/esm", // Output as ES modules
+    type: 'javascript/esm', // Output as ES modules
     exclude: /node_modules/, // Don't process node_modules for performance
     use: [
       {
-        loader: "babel-loader",
+        loader: 'babel-loader',
         options: createBabelOptions(isProd),
       },
     ],
@@ -83,13 +83,18 @@ function createScriptRule(isProd: boolean): RuleSetRule {
 }
 
 /**
+ * Type for Babel plugin/preset configuration options
+ */
+type BabelConfigOptions = Record<string, unknown>;
+
+/**
  * TypeScript interface for Babel loader options
  */
 interface BabelOptions {
   /** Babel presets for transforming code */
-  presets: Array<string | [string, Record<string, any>]>;
+  presets: (string | [string, BabelConfigOptions])[];
   /** Babel plugins for code transformations */
-  plugins: Array<string | [string, Record<string, any>]>;
+  plugins: (string | [string, BabelConfigOptions])[];
   /** Enable Babel caching for faster builds */
   cacheDirectory: boolean;
   /** Disable cache compression for faster I/O */
@@ -123,7 +128,7 @@ function createBabelOptions(isProd: boolean): BabelOptions {
     presets: [
       // @babel/preset-env - Transform modern JavaScript to support target browsers
       [
-        resolveModule("@babel/preset-env"),
+        resolveModule('@babel/preset-env'),
         {
           bugfixes: true, // Enable latest bugfixes for smaller output
           modules: false, // Keep ES modules for webpack tree-shaking
@@ -133,15 +138,15 @@ function createBabelOptions(isProd: boolean): BabelOptions {
       ],
       // @babel/preset-react - Transform JSX and React-specific features
       [
-        resolveModule("@babel/preset-react"),
+        resolveModule('@babel/preset-react'),
         {
-          runtime: "automatic", // Use React 17+ automatic JSX runtime (no need to import React)
+          runtime: 'automatic', // Use React 17+ automatic JSX runtime (no need to import React)
           development: !isProd, // Enable development helpers in dev mode
         },
       ],
       // @babel/preset-typescript - Transform TypeScript to JavaScript
       [
-        resolveModule("@babel/preset-typescript"),
+        resolveModule('@babel/preset-typescript'),
         {
           allowDeclareFields: true, // Allow declare property syntax
           allowNamespaces: true, // Support TypeScript namespaces
@@ -153,22 +158,28 @@ function createBabelOptions(isProd: boolean): BabelOptions {
     ],
     plugins: [
       // Core language feature plugins
-      resolveModule("@babel/plugin-syntax-top-level-await"), // Enable top-level await
-      resolveModule("@babel/plugin-transform-private-methods"), // Transform private methods
-      resolveModule("@babel/plugin-transform-class-properties"), // Transform class properties
-      resolveModule("@babel/plugin-transform-private-property-in-object"), // Transform private properties
+      resolveModule('@babel/plugin-syntax-top-level-await'), // Enable top-level await
+      resolveModule('@babel/plugin-transform-private-methods'), // Transform private methods
+      resolveModule('@babel/plugin-transform-class-properties'), // Transform class properties
+      resolveModule('@babel/plugin-transform-private-property-in-object'), // Transform private properties
 
       // Environment-specific plugins
       ...(isProd
         ? [
             // Production optimizations
-            [resolveModule("babel-plugin-transform-remove-console"), { exclude: ["error", "warn"] }] as [string, Record<string, any>],
-            resolveModule("babel-plugin-transform-react-remove-prop-types"), // Remove PropTypes in production
-            [resolveModule("babel-plugin-transform-remove-undefined"), { tdz: true }] as [string, Record<string, any>],
+            [
+              resolveModule('babel-plugin-transform-remove-console'),
+              { exclude: ['error', 'warn'] },
+            ] as [string, BabelConfigOptions],
+            resolveModule('babel-plugin-transform-react-remove-prop-types'), // Remove PropTypes in production
+            [resolveModule('babel-plugin-transform-remove-undefined'), { tdz: true }] as [
+              string,
+              BabelConfigOptions,
+            ],
           ]
         : [
             // Development optimizations
-            resolveModule("react-refresh/babel"), // Enable React Fast Refresh
+            resolveModule('react-refresh/babel'), // Enable React Fast Refresh
           ]),
     ],
     cacheDirectory: true, // Enable caching for faster subsequent builds
@@ -247,14 +258,14 @@ function createModuleCssRule(isProd: boolean, uniqueName: string): RuleSetRule {
 function createImageRule(isProd: boolean): RuleSetRule {
   return {
     test: /\.(png|jpe?g|gif|webp|avif)$/i, // Match common image formats
-    type: "asset", // Automatic choice between inline and resource
+    type: 'asset', // Automatic choice between inline and resource
     parser: {
       dataUrlCondition: { maxSize: 8 * 1024 }, // Inline images smaller than 8KB
     },
     generator: {
       filename: isProd
-        ? "images/[name].[contenthash:8][ext]" // Content hash for caching in production
-        : "images/[name][ext]", // Simple naming in development
+        ? 'images/[name].[contenthash:8][ext]' // Content hash for caching in production
+        : 'images/[name][ext]', // Simple naming in development
     },
   };
 }
@@ -277,28 +288,28 @@ function createSvgRule(isProd: boolean): RuleSetRule {
       // Handle ?raw query - import as raw SVG string
       {
         resourceQuery: /raw/,
-        type: "asset/source", // Return the raw file content
+        type: 'asset/source', // Return the raw file content
       },
       // Handle ?url query - import as URL
       {
         resourceQuery: /url/,
-        type: "asset", // Emit as file and return URL
+        type: 'asset', // Emit as file and return URL
         generator: {
           filename: isProd
-            ? "images/[name].[contenthash:8][ext]" // Content hash for caching
-            : "images/[name][ext]", // Simple naming in development
+            ? 'images/[name].[contenthash:8][ext]' // Content hash for caching
+            : 'images/[name][ext]', // Simple naming in development
         },
       },
       // Default behavior - import as React component
       {
         use: [
           {
-            loader: "@svgr/webpack", // Transform SVG to React component
+            loader: '@svgr/webpack', // Transform SVG to React component
             options: {
               svgoConfig: {
                 plugins: [
                   {
-                    name: "removeViewBox",
+                    name: 'removeViewBox',
                     active: false, // Keep viewBox for responsive SVGs
                   },
                 ],
@@ -321,11 +332,11 @@ function createSvgRule(isProd: boolean): RuleSetRule {
 function createFontRule(isProd: boolean): RuleSetRule {
   return {
     test: /\.(woff2?|eot|ttf|otf)$/i, // Match common font formats
-    type: "asset/resource", // Always emit as separate files
+    type: 'asset/resource', // Always emit as separate files
     generator: {
       filename: isProd
-        ? "fonts/[name].[contenthash:8][ext]" // Content hash for caching
-        : "fonts/[name][ext]", // Simple naming in development
+        ? 'fonts/[name].[contenthash:8][ext]' // Content hash for caching
+        : 'fonts/[name][ext]', // Simple naming in development
     },
   };
 }
@@ -340,14 +351,14 @@ function createFontRule(isProd: boolean): RuleSetRule {
 function createMediaRule(isProd: boolean): RuleSetRule {
   return {
     test: /\.(mp4|webm|ogg|mp3|wav|flac|aac)$/i, // Match common media formats
-    type: "asset", // Automatic choice between inline and resource
+    type: 'asset', // Automatic choice between inline and resource
     parser: {
       dataUrlCondition: { maxSize: 8 * 1024 }, // Inline media smaller than 8KB
     },
     generator: {
       filename: isProd
-        ? "media/[name].[contenthash:8][ext]" // Content hash for caching
-        : "media/[name][ext]", // Simple naming in development
+        ? 'media/[name].[contenthash:8][ext]' // Content hash for caching
+        : 'media/[name][ext]', // Simple naming in development
     },
   };
 }
@@ -371,16 +382,20 @@ interface StyleLoadersOptions {
  * @param options - Style loader options
  * @returns Array of webpack loaders for SCSS processing
  */
-function createScssLoaders({ isProd, withModules, uniqueName }: StyleLoadersOptions) {
+function createScssLoaders({
+  isProd,
+  withModules,
+  uniqueName,
+}: StyleLoadersOptions): RuleSetUseItem[] {
   return [
     getStyleLoader(isProd), // Inject CSS into DOM (dev) or extract to file (prod)
     createCssLoader({ isProd, withModules, importLoaders: 2, uniqueName }), // Process CSS imports and modules
     createPostCssLoader(isProd), // PostCSS transformations (autoprefixer, etc.)
     {
-      loader: "sass-loader", // Compile SCSS to CSS
+      loader: 'sass-loader', // Compile SCSS to CSS
       options: {
         sourceMap: !isProd, // Generate source maps in development
-        sassOptions: { outputStyle: isProd ? "compressed" : "expanded" },
+        sassOptions: { outputStyle: isProd ? 'compressed' : 'expanded' },
       },
     },
   ];
@@ -393,7 +408,11 @@ function createScssLoaders({ isProd, withModules, uniqueName }: StyleLoadersOpti
  * @param options - Style loader options
  * @returns Array of webpack loaders for CSS processing
  */
-function createCssLoaders({ isProd, withModules, uniqueName }: StyleLoadersOptions) {
+function createCssLoaders({
+  isProd,
+  withModules,
+  uniqueName,
+}: StyleLoadersOptions): RuleSetUseItem[] {
   return [
     getStyleLoader(isProd), // Inject CSS into DOM (dev) or extract to file (prod)
     createCssLoader({ isProd, withModules, importLoaders: 1, uniqueName }), // Process CSS imports and modules
@@ -409,8 +428,8 @@ function createCssLoaders({ isProd, withModules, uniqueName }: StyleLoadersOptio
  * @param isProd - Whether this is a production build
  * @returns CSS style loader
  */
-function getStyleLoader(isProd: boolean) {
-  return isProd ? MiniCssExtractPlugin.loader : "style-loader";
+function getStyleLoader(isProd: boolean): string {
+  return isProd ? MiniCssExtractPlugin.loader : 'style-loader';
 }
 
 /**
@@ -439,36 +458,41 @@ interface CssLoaderOptions {
  * @param options - CSS loader configuration options
  * @returns css-loader configuration object
  */
-function createCssLoader({ isProd, withModules, importLoaders, uniqueName }: CssLoaderOptions) {
-  const baseOptions: Record<string, any> = {
+function createCssLoader({
+  isProd,
+  withModules,
+  importLoaders,
+  uniqueName,
+}: CssLoaderOptions): RuleSetUseItem {
+  const baseOptions: Record<string, unknown> = {
     importLoaders, // Number of loaders applied before css-loader
     sourceMap: !isProd, // Generate source maps in development
   };
 
   if (withModules) {
     // CSS Modules configuration
-    baseOptions.modules = {
+    baseOptions['modules'] = {
       localIdentName: isProd
         ? `${uniqueName}_[hash:base64:6]` // Short hash for production
         : `${uniqueName}_[name]__[local]__[hash:base64:5]`, // Readable names for development
-      mode: "local", // Enable CSS modules
+      mode: 'local', // Enable CSS modules
       ...(importLoaders === 2 // SCSS files have 2 import loaders (postcss + sass)
         ? {
             namedExport: true, // Export class names as named exports
-            exportLocalsConvention: "camelCaseOnly", // Convert kebab-case to camelCase
+            exportLocalsConvention: 'camelCaseOnly', // Convert kebab-case to camelCase
           }
         : {}),
     };
   } else if (importLoaders === 2) {
     // URL filtering for SCSS files (security measure)
-    baseOptions.url = {
+    baseOptions['url'] = {
       // Prevent absolute/remote URLs from being processed for security
-      filter: (url: string) => !(url.startsWith("/") || url.startsWith("http")),
+      filter: (url: string) => !(url.startsWith('/') || url.startsWith('http')),
     };
   }
 
   return {
-    loader: "css-loader",
+    loader: 'css-loader',
     options: baseOptions,
   };
 }
@@ -483,14 +507,14 @@ function createCssLoader({ isProd, withModules, importLoaders, uniqueName }: Css
  * @param isProd - Whether this is a production build
  * @returns PostCSS loader configuration
  */
-function createPostCssLoader(isProd: boolean) {
+function createPostCssLoader(isProd: boolean): RuleSetUseItem {
   return {
-    loader: "postcss-loader",
+    loader: 'postcss-loader',
     options: {
       postcssOptions: {
         plugins: [
-          "postcss-preset-env", // Autoprefixer and modern CSS polyfills
-          ...(isProd ? ["cssnano"] : []), // CSS minification in production
+          'postcss-preset-env', // Autoprefixer and modern CSS polyfills
+          ...(isProd ? ['cssnano'] : []), // CSS minification in production
         ],
       },
       sourceMap: !isProd, // Generate source maps in development

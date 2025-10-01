@@ -1,26 +1,32 @@
 // Node.js built-in modules
-import { resolve } from "node:path";
+import { resolve } from 'node:path';
 
 // Third-party type definitions
-import type { Configuration } from "webpack";
+import type { Configuration, WebpackPluginInstance } from 'webpack';
+
+/**
+ * Type for webpack plugins array - more specific than Configuration['plugins']
+ */
+type WebpackPlugins = (WebpackPluginInstance | null | false | undefined | '' | 0)[];
 
 // Webpack plugins
-import HtmlWebpackPlugin from "html-webpack-plugin";
-import MiniCssExtractPlugin from "mini-css-extract-plugin";
-import CopyWebpackPlugin from "copy-webpack-plugin";
-import ReactRefreshWebpackPlugin from "@pmmmwh/react-refresh-webpack-plugin";
-import ExternalTemplateRemotesPlugin from "external-remotes-plugin";
+import HtmlWebpackPlugin from 'html-webpack-plugin';
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import CopyWebpackPlugin from 'copy-webpack-plugin';
+import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
+
+import ExternalTemplateRemotesPlugin from 'external-remotes-plugin';
 import { ModuleFederationPlugin } from '@module-federation/enhanced/webpack';
 
 // Internal type definitions
-import { ModuleFederationOptions, WebpackInstanceType } from "./@types/types";
+import { type ModuleFederationOptions, type WebpackInstanceType } from './@types/types';
 
 /**
  * Configuration options for creating webpack plugins
  */
 export interface CreatePluginsOptions {
   /** Webpack instance for accessing internal plugins */
-  webpackInstance: WebpackInstanceType,
+  webpackInstance: WebpackInstanceType;
   /** Whether this is a production build */
   isProd: boolean;
   /** Path to HTML template file */
@@ -28,11 +34,11 @@ export interface CreatePluginsOptions {
   /** Root directory of the project */
   projectRoot: string;
   /** Bundle analyzer plugins (optional) */
-  analyzerPlugins?: Configuration["plugins"];
+  analyzerPlugins?: WebpackPlugins;
   /** Additional user-provided plugins (optional) */
-  additionalPlugins?: Configuration["plugins"];
+  additionalPlugins?: WebpackPlugins;
   /** Module Federation configuration (optional) */
-  moduleFederation?: ModuleFederationOptions,
+  moduleFederation?: ModuleFederationOptions;
 }
 
 /**
@@ -62,24 +68,29 @@ export interface CreatePluginsOptions {
  * ```
  */
 export function createPlugins({
-  webpackInstance,
   isProd,
   htmlTemplate,
   projectRoot,
   analyzerPlugins = [],
   additionalPlugins = [],
   moduleFederation,
-}: CreatePluginsOptions): Configuration["plugins"] {
-  const plugins = [
-    // Module Federation Plugin - enables micro-frontend architecture
-    ...(moduleFederation && (Object.keys(moduleFederation ?? {}).length) ? [
-      new ModuleFederationPlugin(moduleFederation),
-    ] : []),
+}: CreatePluginsOptions): WebpackPlugins {
+  // Module Federation Plugin - enables micro-frontend architecture
+  const moduleFederationPlugins: WebpackPlugins =
+    moduleFederation && Object.keys(moduleFederation).length
+      ? [new ModuleFederationPlugin(moduleFederation)]
+      : [];
 
-    // External Template Remotes Plugin - handles external remote loading for Module Federation
-    ...(!!Object.keys(moduleFederation?.remotes ?? {}).length ? [
-      new ExternalTemplateRemotesPlugin(),
-    ] : []),
+  // External Template Remotes Plugin - handles external remote loading for Module Federation
+  const externalRemotesPlugins: WebpackPlugins =
+    moduleFederation?.remotes && Object.keys(moduleFederation.remotes).length
+      ? // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- external-remotes-plugin lacks proper type definitions
+        [new ExternalTemplateRemotesPlugin() as WebpackPluginInstance]
+      : [];
+
+  const plugins: WebpackPlugins = [
+    ...moduleFederationPlugins,
+    ...externalRemotesPlugins,
 
     // HTML Generation Plugin - creates HTML file with injected bundles
     new HtmlWebpackPlugin({
@@ -99,15 +110,15 @@ export function createPlugins({
             minifyURLs: true, // Minify URLs
           }
         : false, // No minification in development for better debugging
-      meta: { viewport: "width=device-width, initial-scale=1" }, // Mobile-friendly viewport
+      meta: { viewport: 'width=device-width, initial-scale=1' }, // Mobile-friendly viewport
     }),
 
     // CSS Extraction Plugin - extract CSS to separate files in production
     ...(isProd
       ? [
           new MiniCssExtractPlugin({
-            filename: "[name].[contenthash:8].css", // Main CSS files with content hash
-            chunkFilename: "[id].[contenthash:8].css", // CSS chunks with content hash
+            filename: '[name].[contenthash:8].css', // Main CSS files with content hash
+            chunkFilename: '[id].[contenthash:8].css', // CSS chunks with content hash
             ignoreOrder: true, // Ignore CSS order warnings (for CSS modules)
           }),
         ]
@@ -117,10 +128,10 @@ export function createPlugins({
     new CopyWebpackPlugin({
       patterns: [
         {
-          from: resolve(projectRoot, "public"), // Source directory
-          to: ".", // Copy to output root
+          from: resolve(projectRoot, 'public'), // Source directory
+          to: '.', // Copy to output root
           globOptions: {
-            ignore: ["**/index.html"], // Ignore HTML template (handled by HtmlWebpackPlugin)
+            ignore: ['**/index.html'], // Ignore HTML template (handled by HtmlWebpackPlugin)
           },
           noErrorOnMissing: true, // Don't fail if public directory doesn't exist
         },
@@ -128,13 +139,13 @@ export function createPlugins({
     }),
 
     // Bundle analyzer plugins (if enabled)
-    ...(analyzerPlugins ?? []),
+    ...analyzerPlugins,
 
     // React Fast Refresh Plugin - enable hot reloading in development
     ...(!isProd ? [new ReactRefreshWebpackPlugin({ overlay: false })] : []),
 
     // User-provided additional plugins
-    ...(additionalPlugins ?? []),
+    ...additionalPlugins,
   ];
 
   return plugins;
@@ -158,19 +169,19 @@ export function createPlugins({
  * }
  * ```
  */
-export async function loadAnalyzerPlugins(): Promise<Configuration["plugins"]> {
+export async function loadAnalyzerPlugins(): Promise<Configuration['plugins']> {
   try {
     // Dynamic import - only loads when analyzer is requested
-    const { BundleAnalyzerPlugin } = await import("webpack-bundle-analyzer");
+    const { BundleAnalyzerPlugin } = await import('webpack-bundle-analyzer');
     return [
       new BundleAnalyzerPlugin({
-        analyzerMode: "static", // Generate static HTML report
+        analyzerMode: 'static', // Generate static HTML report
         openAnalyzer: true, // Automatically open the report in browser
       }),
     ];
   } catch (error) {
     throw new Error(
-      "Set ANALYZE=true only after adding webpack-bundle-analyzer: " + (error as Error).message
+      'Set ANALYZE=true only after adding webpack-bundle-analyzer: ' + (error as Error).message,
     );
   }
 }

@@ -1,4 +1,4 @@
-import { describe, it, expect } from '@jest/globals';
+import { describe, it, expect, beforeAll } from '@jest/globals';
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 
@@ -48,16 +48,16 @@ describe('Dependencies', () => {
       'mini-css-extract-plugin',
       'sass-loader',
       'style-loader',
-      'terser-webpack-plugin'
+      'terser-webpack-plugin',
     ];
 
     it('should have all required webpack dependencies', () => {
       const allDeps = {
         ...packageJson.dependencies,
-        ...packageJson.optionalDependencies
+        ...packageJson.optionalDependencies,
       };
 
-      requiredDependencies.forEach(dep => {
+      requiredDependencies.forEach((dep) => {
         expect(allDeps).toHaveProperty(dep);
       });
     });
@@ -79,11 +79,11 @@ describe('Dependencies', () => {
       'jest',
       'rimraf',
       'ts-jest',
-      'typescript'
+      'typescript',
     ];
 
     it('should have all required development dependencies', () => {
-      requiredDevDeps.forEach(dep => {
+      requiredDevDeps.forEach((dep) => {
         expect(packageJson.devDependencies).toHaveProperty(dep);
       });
     });
@@ -94,10 +94,8 @@ describe('Dependencies', () => {
       const deps = packageJson.dependencies || {};
       const devDeps = packageJson.devDependencies || {};
 
-      // Check that most dependencies use caret (^) for minor updates
-      Object.entries({ ...deps, ...devDeps }).forEach(([name, version]) => {
+      Object.entries({ ...deps, ...devDeps }).forEach(([, version]) => {
         if (typeof version === 'string') {
-          // Most dependencies should use ^ for automatic minor updates
           expect(version).toMatch(/^[\^~]?\d+/);
         }
       });
@@ -106,14 +104,9 @@ describe('Dependencies', () => {
     it('should have compatible peer dependency versions', () => {
       const peerDeps = packageJson.peerDependencies || {};
 
-      // React should be 18+
       expect(peerDeps.react).toMatch(/>=18/);
       expect(peerDeps['react-dom']).toMatch(/>=18/);
-
-      // Webpack should be 5+
       expect(peerDeps.webpack).toMatch(/>=5/);
-
-      // TypeScript should be 4+
       expect(peerDeps.typescript).toMatch(/>=4/);
     });
   });
@@ -125,11 +118,11 @@ describe('Dependencies', () => {
       'build:esm',
       'test',
       'test:coverage',
-      'deps:update'
+      'deps:update',
     ];
 
     it('should have all required npm scripts', () => {
-      requiredScripts.forEach(script => {
+      requiredScripts.forEach((script) => {
         expect(packageJson.scripts).toHaveProperty(script);
       });
     });
@@ -157,33 +150,27 @@ describe('Dependencies', () => {
       const allDeps = {
         ...packageJson.dependencies,
         ...packageJson.devDependencies,
-        ...packageJson.optionalDependencies
+        ...packageJson.optionalDependencies,
       };
 
-      // Check for common vulnerable packages (these should be avoided)
       const vulnerablePatterns = [
         'event-stream',
         'flatmap-stream',
         'eslint-scope',
-        'bootstrap-sass'
+        'bootstrap-sass',
       ];
 
-      vulnerablePatterns.forEach(pattern => {
+      vulnerablePatterns.forEach((pattern) => {
         expect(allDeps).not.toHaveProperty(pattern);
       });
     });
 
-    it('should not have direct dependencies on native modules', () => {
+    it('should not have direct dependencies on deprecated native modules', () => {
       const deps = packageJson.dependencies || {};
 
-      // These packages often cause issues in different environments
-      const nativeModules = [
-        'fsevents',
-        'node-sass', // deprecated in favor of sass
-        'node-gyp'
-      ];
+      const deprecatedModules = ['node-sass', 'node-gyp'];
 
-      nativeModules.forEach(mod => {
+      deprecatedModules.forEach((mod) => {
         expect(deps).not.toHaveProperty(mod);
       });
     });
@@ -192,12 +179,12 @@ describe('Dependencies', () => {
   describe('Babel configuration dependencies', () => {
     it('should have consistent babel preset versions', () => {
       const deps = packageJson.dependencies || {};
-      const babelDeps = Object.keys(deps).filter(dep => dep.startsWith('@babel/'));
+      const babelDeps = Object.keys(deps).filter((dep) => dep.startsWith('@babel/'));
 
-      expect(babelDeps.length).toBeGreaterThan(5); // Should have multiple babel packages
+      expect(babelDeps.length).toBeGreaterThan(5);
 
-      babelDeps.forEach(dep => {
-        expect(deps[dep]).toMatch(/^\^7\./); // Should all be v7.x
+      babelDeps.forEach((dep) => {
+        expect(deps[dep]).toMatch(/^\^7\./);
       });
     });
   });
@@ -207,16 +194,15 @@ describe('Dependencies', () => {
       'html-webpack-plugin',
       'mini-css-extract-plugin',
       'copy-webpack-plugin',
-      'fork-ts-checker-webpack-plugin',
       '@pmmmwh/react-refresh-webpack-plugin',
       'terser-webpack-plugin',
-      'css-minimizer-webpack-plugin'
+      'css-minimizer-webpack-plugin',
     ];
 
     it('should have all webpack plugins as dependencies', () => {
       const deps = { ...packageJson.dependencies, ...packageJson.optionalDependencies };
 
-      expectedPlugins.forEach(plugin => {
+      expectedPlugins.forEach((plugin) => {
         expect(deps).toHaveProperty(plugin);
       });
     });
@@ -229,16 +215,23 @@ describe('Dependencies', () => {
       'sass-loader',
       'style-loader',
       'postcss-loader',
-      'thread-loader',
-      'image-webpack-loader'
     ];
 
     it('should have all webpack loaders as dependencies', () => {
       const deps = packageJson.dependencies || {};
 
-      expectedLoaders.forEach(loader => {
+      expectedLoaders.forEach((loader) => {
         expect(deps).toHaveProperty(loader);
       });
+    });
+  });
+
+  describe('Module Federation dependencies', () => {
+    it('should have Module Federation dependencies', () => {
+      const deps = packageJson.dependencies || {};
+
+      expect(deps).toHaveProperty('@module-federation/enhanced');
+      expect(deps).toHaveProperty('external-remotes-plugin');
     });
   });
 
@@ -248,10 +241,9 @@ describe('Dependencies', () => {
     });
 
     it('should handle optional dependencies gracefully', () => {
-      // Optional deps should not break the build if missing
       const optionalDeps = packageJson.optionalDependencies || {};
 
-      Object.keys(optionalDeps).forEach(dep => {
+      Object.keys(optionalDeps).forEach((dep) => {
         expect(typeof optionalDeps[dep]).toBe('string');
         expect(optionalDeps[dep]).toMatch(/^\^?\d+/);
       });

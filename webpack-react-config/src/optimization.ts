@@ -1,9 +1,9 @@
 // Third-party type definitions
-import type { Configuration } from "webpack";
+import type { Configuration } from 'webpack';
 
 // Webpack optimization plugins
-import TerserPlugin from "terser-webpack-plugin";
-import CssMinimizerPlugin from "css-minimizer-webpack-plugin";
+import TerserPlugin from 'terser-webpack-plugin';
+import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
 
 /**
  * Configuration options for webpack optimization
@@ -33,7 +33,9 @@ export interface OptimizationOptions {
  * });
  * ```
  */
-export function createOptimization({ isProd }: OptimizationOptions): Configuration["optimization"] {
+type WebpackOptimization = NonNullable<Configuration['optimization']>;
+
+export function createOptimization({ isProd }: OptimizationOptions): WebpackOptimization {
   return {
     // Enable minification only in production
     minimize: isProd,
@@ -46,10 +48,10 @@ export function createOptimization({ isProd }: OptimizationOptions): Configurati
           compress: {
             drop_console: isProd, // Remove console statements in production
             drop_debugger: isProd, // Remove debugger statements in production
-            pure_funcs: isProd ? ["console.log", "console.info"] : [], // Remove specific console methods
+            pure_funcs: isProd ? ['console.log', 'console.info'] : [], // Remove specific console methods
           },
           format: {
-            comments: false // Remove comments from output
+            comments: false, // Remove comments from output
           },
         },
         extractComments: false, // Don't extract comments to separate files
@@ -59,10 +61,10 @@ export function createOptimization({ isProd }: OptimizationOptions): Configurati
       new CssMinimizerPlugin({
         minimizerOptions: {
           preset: [
-            "default",
+            'default',
             {
-              discardComments: { removeAll: true } // Remove all CSS comments
-            }
+              discardComments: { removeAll: true }, // Remove all CSS comments
+            },
           ],
         },
       }),
@@ -72,7 +74,7 @@ export function createOptimization({ isProd }: OptimizationOptions): Configurati
     concatenateModules: true, // Enable scope hoisting for better performance
 
     // Module and chunk ID generation strategy
-    moduleIds: isProd ? "deterministic" : "named", // Consistent IDs for caching (prod) vs readable names (dev)
-    chunkIds: isProd ? "deterministic" : "named", // Consistent chunk IDs for caching (prod) vs readable names (dev)
+    moduleIds: isProd ? 'deterministic' : 'named', // Consistent IDs for caching (prod) vs readable names (dev)
+    chunkIds: isProd ? 'deterministic' : 'named', // Consistent chunk IDs for caching (prod) vs readable names (dev)
   };
 }

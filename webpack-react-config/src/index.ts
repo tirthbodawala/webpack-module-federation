@@ -9,16 +9,21 @@
  */
 
 // Node.js built-in modules
-import { resolve } from "node:path";
+import { resolve } from 'node:path';
 
 // Third-party type definitions
-import type { Configuration as WebpackConfiguration } from "webpack";
+import type { Configuration as WebpackConfiguration } from 'webpack';
 
 // Internal modules - organized by functionality
-import { createModuleRules } from "./loaders.js";
-import { createPlugins, loadAnalyzerPlugins } from "./plugins.js";
-import { createOptimization } from "./optimization.js";
-import { CreateConfigOptions, ModuleFederationOptions, WebpackConfigWithDevServer, WebpackInstanceType } from "./@types/types.js";
+import { createModuleRules } from './loaders.js';
+import { createPlugins, loadAnalyzerPlugins } from './plugins.js';
+import { createOptimization } from './optimization.js';
+import {
+  type CreateConfigOptions,
+  type ModuleFederationOptions,
+  type WebpackConfigWithDevServer,
+  type WebpackInstanceType,
+} from './@types/types.js';
 
 // ============================================================================
 // HELPER FUNCTIONS
@@ -27,39 +32,41 @@ import { CreateConfigOptions, ModuleFederationOptions, WebpackConfigWithDevServe
 /**
  * Gets the default webpack mode from environment variables
  */
-const getDefaultMode = (): WebpackConfiguration["mode"] =>
-  (process.env.NODE_ENV as WebpackConfiguration["mode"]) ?? "development";
+const getDefaultMode = (): WebpackConfiguration['mode'] =>
+  (process.env['NODE_ENV'] as WebpackConfiguration['mode']) ?? 'development';
 
 /**
  * Checks if bundle analysis is enabled via environment variable
  */
-const getDefaultAnalyze = (): boolean => process.env.ANALYZE === "true";
+const getDefaultAnalyze = (): boolean => process.env['ANALYZE'] === 'true';
 
 /**
  * Configures Module Federation with sensible defaults
  */
-function configureModuleFederation(moduleFederation: ModuleFederationOptions, uniqueName: string): void {
-  if (moduleFederation && Object.keys(moduleFederation ?? {}).length) {
-    if (!moduleFederation.name) {
-      moduleFederation.name = uniqueName;
-    }
-    if (!moduleFederation.filename) {
-      moduleFederation.filename = 'remoteEntry.js';
-    }
+function configureModuleFederation(
+  moduleFederation?: ModuleFederationOptions,
+  uniqueName?: string,
+): void {
+  if (moduleFederation && Object.keys(moduleFederation).length) {
+    moduleFederation.name ??= uniqueName;
+    moduleFederation.filename ??= 'remoteEntry.js';
   }
 }
 
 /**
  * Resolves node_modules paths for loader resolution
  */
-function resolveNodeModulesPaths(projectRoot: string): { appNodeModules: string; pkgNodeModules: string } {
-  const appNodeModules = resolve(projectRoot, "node_modules");
+function resolveNodeModulesPaths(projectRoot: string): {
+  appNodeModules: string;
+  pkgNodeModules: string;
+} {
+  const appNodeModules = resolve(projectRoot, 'node_modules');
   let pkgNodeModules: string;
 
   try {
-    pkgNodeModules = resolve(appNodeModules, "webpack-react-config/node_modules");
+    pkgNodeModules = resolve(appNodeModules, 'webpack-react-config/node_modules');
   } catch {
-    pkgNodeModules = resolve(appNodeModules, "webpack-react-config/node_modules");
+    pkgNodeModules = resolve(appNodeModules, 'webpack-react-config/node_modules');
   }
 
   return { appNodeModules, pkgNodeModules };
@@ -68,13 +75,15 @@ function resolveNodeModulesPaths(projectRoot: string): { appNodeModules: string;
 /**
  * Loads bundle analyzer plugins if analysis is requested
  */
-async function loadBundleAnalyzerPlugins(analyze: boolean): Promise<WebpackConfiguration["plugins"]> {
+async function loadBundleAnalyzerPlugins(
+  analyze: boolean,
+): Promise<WebpackConfiguration['plugins']> {
   if (!analyze) return [];
 
   try {
     return await loadAnalyzerPlugins();
   } catch (error) {
-    console.warn("Bundle analyzer plugins could not be loaded:", (error as Error).message);
+    console.warn('Bundle analyzer plugins could not be loaded:', (error as Error).message);
     return [];
   }
 }
@@ -83,7 +92,7 @@ async function loadBundleAnalyzerPlugins(analyze: boolean): Promise<WebpackConfi
  * Creates the core webpack configuration object
  */
 function createCoreConfig(options: {
-  mode: WebpackConfiguration["mode"];
+  mode: WebpackConfiguration['mode'];
   entry: string;
   isProd: boolean;
   uniqueName: string;
@@ -92,22 +101,23 @@ function createCoreConfig(options: {
   distPath: string;
   publicPath: string;
 }): Partial<WebpackConfigWithDevServer> {
-  const { mode, entry, isProd, uniqueName, appNodeModules, pkgNodeModules, distPath, publicPath } = options;
+  const { mode, entry, isProd, uniqueName, appNodeModules, pkgNodeModules, distPath, publicPath } =
+    options;
 
   return {
     mode,
     entry,
-    target: ["web", "es2020"],
+    target: ['web', 'es2020'],
     experiments: { topLevelAwait: true },
-    devtool: isProd ? "source-map" : "eval-cheap-module-source-map",
+    devtool: isProd ? 'source-map' : 'eval-cheap-module-source-map',
 
     module: {
       rules: createModuleRules({ isProd, uniqueName }),
     },
 
     resolve: {
-      extensions: [".tsx", ".ts", ".jsx", ".js", ".json"],
-      modules: ["node_modules"],
+      extensions: ['.tsx', '.ts', '.jsx', '.js', '.json'],
+      modules: ['node_modules'],
       symlinks: false,
     },
 
@@ -122,21 +132,21 @@ function createCoreConfig(options: {
       uniqueName,
       clean: true,
       path: distPath,
-      filename: isProd ? "[name].[contenthash:8].js" : "[name].js",
-      chunkFilename: isProd ? "[name].[contenthash:8].chunk.js" : "[name].chunk.js",
-      assetModuleFilename: isProd ? "assets/[name].[contenthash:8][ext]" : "assets/[name][ext]",
+      filename: isProd ? '[name].[contenthash:8].js' : '[name].js',
+      chunkFilename: isProd ? '[name].[contenthash:8].chunk.js' : '[name].chunk.js',
+      assetModuleFilename: isProd ? 'assets/[name].[contenthash:8][ext]' : 'assets/[name][ext]',
       publicPath,
-      crossOriginLoading: "anonymous" as const,
+      crossOriginLoading: 'anonymous' as const,
     },
 
     performance: {
-      hints: isProd ? ("warning" as const) : false,
+      hints: isProd ? ('warning' as const) : false,
       maxEntrypointSize: 512000,
       maxAssetSize: 512000,
     },
 
     stats: {
-      preset: "minimal" as const,
+      preset: 'minimal' as const,
       moduleTrace: true,
       errorDetails: true,
     },
@@ -150,7 +160,7 @@ function createDevServerConfig(options: {
   port: number;
   host: string;
   distPath: string;
-}): WebpackConfigWithDevServer["devServer"] {
+}): WebpackConfigWithDevServer['devServer'] {
   const { port, host, distPath } = options;
 
   return {
@@ -165,13 +175,12 @@ function createDevServerConfig(options: {
     },
     static: distPath,
     headers: {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
-      "Access-Control-Allow-Headers": "X-Requested-With, content-type, Authorization"
-    }
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH, OPTIONS',
+      'Access-Control-Allow-Headers': 'X-Requested-With, content-type, Authorization',
+    },
   };
 }
-
 
 // ============================================================================
 // MAIN EXPORT FUNCTION
@@ -212,25 +221,23 @@ export async function createConfig(
     uniqueName,
     mode = getDefaultMode(),
     analyze = getDefaultAnalyze(),
-    entry = "./src/index.tsx",
+    entry = './src/index.tsx',
     projectRoot = process.cwd(),
     port = 3000,
-    host = "0.0.0.0",
-    publicPath = "auto",
-    htmlTemplate = "./public/index.html",
+    host = '0.0.0.0',
+    htmlTemplate = './public/index.html',
     additionalPlugins = [],
     moduleFederation,
     customize,
     ...overrides
-  }: CreateConfigOptions
+  }: CreateConfigOptions,
 ): Promise<WebpackConfigWithDevServer> {
-
   // Configure Module Federation with defaults
   configureModuleFederation(moduleFederation, uniqueName);
 
   // Setup basic configuration
-  const isProd = mode === "production";
-  const distPath = resolve(projectRoot, "dist");
+  const isProd = mode === 'production';
+  const distPath = resolve(projectRoot, 'dist');
   const { appNodeModules, pkgNodeModules } = resolveNodeModulesPaths(projectRoot);
 
   // Load analyzer plugins if requested
@@ -245,7 +252,7 @@ export async function createConfig(
     appNodeModules,
     pkgNodeModules,
     distPath,
-    publicPath: `http://${host}:${port}/`,
+    publicPath: `http://${host}:${port.toString()}/`,
   });
 
   // Create development server configuration
@@ -268,7 +275,7 @@ export async function createConfig(
   };
 
   // Apply custom configuration function if provided
-  return typeof customize === "function" ? customize(config) ?? config : config;
+  return typeof customize === 'function' ? customize(config) : config;
 }
 
 /**

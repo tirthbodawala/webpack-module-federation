@@ -2,7 +2,7 @@
 import webpack from 'webpack';
 import type { Configuration as WebpackConfiguration } from 'webpack';
 import type { Configuration as DevServerConfiguration } from "webpack-dev-server";
-import type { ModuleFederationPluginOptions } from '@module-federation/enhanced/webpack';
+import { ModuleFederationPlugin } from '@module-federation/enhanced/webpack';
 
 /**
  * Extended webpack configuration that includes dev server configuration
@@ -22,7 +22,7 @@ export type WebpackConfigWithDevServer = WebpackConfiguration & {
  * Type for Module Federation plugin options
  * Extracts the first parameter type from the ModuleFederationPlugin constructor
  */
-export type ModuleFederationOptions = ModuleFederationPluginOptions;
+export type ModuleFederationOptions = ConstructorParameters<typeof ModuleFederationPlugin>[0];
 
 /**
  * Type alias for the webpack instance
@@ -73,7 +73,7 @@ export interface CreateConfigOptions {
    * @param config - The generated webpack configuration
    * @returns Modified configuration or void (to modify in place)
    */
-  customize?: (config: WebpackConfigWithDevServer) => WebpackConfigWithDevServer | void;
+  customize?: (config: WebpackConfigWithDevServer) => WebpackConfigWithDevServer;
 
   /** Additional configuration overrides - merged with the final config */
   [key: string]: any;

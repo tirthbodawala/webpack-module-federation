@@ -1,17 +1,43 @@
 {
   "compilerOptions": {
-    "target": "esnext",
-    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    // Target and Module Configuration for Node 22+ and type: module
+    "target": "ES2023",
+    "lib": ["DOM", "DOM.Iterable", "ES2023"],
     "module": "ESNext",
     "moduleResolution": "bundler",
+
+    // Import Configuration
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
-    "jsx": "react-jsx",
-    "isolatedModules": true,
     "resolveJsonModule": true,
+
+    // React Configuration
+    "jsx": "react-jsx",
+
+    // Strict Type Checking (Market Standard - All Strict Options)
     "strict": true,
-    "skipLibCheck": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "exactOptionalPropertyTypes": true,
+
+    // Additional Checks for Code Quality
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    "forceConsistentCasingInFileNames": true,
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false,
+
+    // Emit Configuration
     "noEmit": true,
+    "isolatedModules": true,
+
+    // Performance & Output
+    "skipLibCheck": true,
+
+    // Path Resolution
     "baseUrl": ".",
     "paths": {
       "app1/*": ["./@mf-types/app1/*"],
@@ -20,5 +46,6 @@
       "design/*": ["./@mf-types/design/*"]
     }
   },
-  "include": ["src", "@mf-types"]
+  "include": ["src", "@mf-types"],
+  "exclude": ["node_modules", "dist", "build"]
 }
