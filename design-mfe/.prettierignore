@@ -1,0 +1,25 @@
+# Dependencies
+node_modules
+
+# Build outputs
+dist
+build
+.webpack
+
+# Logs
+*.log
+
+# Coverage
+coverage
+
+# Cache
+.eslintcache
+.stylelintcache
+
+# Module Federation types
+@mf-types
+
+# Lock files
+package-lock.json
+pnpm-lock.yaml
+yarn.lock

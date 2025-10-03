@@ -1,23 +1,22 @@
-import React from "react";
 import {
-  Paper,
-  Tabs,
-  Group,
-  Title,
-  Badge,
   ActionIcon,
+  Badge,
+  Box,
+  Group,
+  Paper,
+  rem,
   Table,
   Text,
-  Box,
-  rem,
+  Title,
 } from "@mantine/core";
 import {
-  IconFilter,
-  IconDownload,
   IconArrowsUpDown,
+  IconDownload,
   IconEye,
+  IconFilter,
   IconPencil,
 } from "@tabler/icons-react";
+import type { FC } from "react";
 
 const rows = [
   {
@@ -76,7 +75,7 @@ const rows = [
   },
 ];
 
-export function Demo() {
+export const Demo:FC = () => {
   return (
     <Box p="md">
       {/* Header: Title */}
@@ -182,7 +181,7 @@ export function Demo() {
   );
 }
 
-function SortableTh({ children }: { children: React.ReactNode }) {
+const SortableTh:FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
     <Table.Th>
       <Group gap={6} wrap="nowrap">

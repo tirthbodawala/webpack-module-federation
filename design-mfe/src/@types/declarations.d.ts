@@ -1,9 +1,25 @@
-// Generic fallbacks
-declare module '*.scss';
-declare module '*.css';
+// src/declaration.d.ts
+declare module '*.module.css' {
+  const classes: Readonly<Record<string, string>>;
+  export = classes;
+}
+
+declare module '*.module.scss' {
+  const classes: Readonly<Record<string, string>>;
+  export = classes;
+}
+
+declare module '*.css' {
+  const classes: Readonly<Record<string, string>>;
+  export default classes;
+}
+
+declare module '*.scss' {
+  const classes: Readonly<Record<string, string>>;
+  export default classes;
+}
 
 // src/assets.d.ts
-
 // ----------------------------- Images ---------------------------------
 declare module '*.png'  { const src: string; export default src; }
 declare module '*.jpg'  { const src: string; export default src; }
@@ -15,6 +31,7 @@ declare module '*.avif' { const src: string; export default src; }
 // ------------------------------ SVG -----------------------------------
 // Default: SVGR React component
 declare module '*.svg' {
+  // eslint-disable-next-line @typescript-eslint/consistent-type-imports, @typescript-eslint/naming-convention
   import * as React from 'react';
   const ReactComponent: React.FC<React.SVGProps<SVGSVGElement> & { title?: string }>;
   export default ReactComponent;

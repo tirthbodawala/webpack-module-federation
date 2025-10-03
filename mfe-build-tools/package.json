@@ -1,0 +1,135 @@
+{
+  "name": "mfe-build-tools",
+  "version": "1.0.0",
+  "description": "Complete build toolchain for MFE (Module Federation) projects - includes Webpack, ESLint, Prettier, Stylelint, and TypeScript configurations",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./webpack": {
+      "types": "./dist/webpack/index.d.ts",
+      "default": "./dist/webpack/index.js"
+    },
+    "./eslint": {
+      "types": "./dist/eslint/index.d.ts",
+      "default": "./dist/eslint/index.js"
+    },
+    "./typescript/base": "./src/typescript/base.json",
+    "./typescript/react": "./src/typescript/react.json",
+    "./typescript/node": "./src/typescript/node.json",
+    "./typescript/library": "./src/typescript/library.json",
+    "./prettier": "./src/prettier/index.js",
+    "./stylelint": {
+      "types": "./dist/stylelint/index.d.ts",
+      "default": "./dist/stylelint/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "src/typescript",
+    "src/prettier"
+  ],
+  "scripts": {
+    "build": "npm run build:clean && npm run build:esm",
+    "build:clean": "rimraf dist",
+    "build:esm": "tsc -p tsconfig.build.json",
+    "build:watch": "npm run build && chokidar \"src/**/*\" -c \"npm run build\"",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "validate": "npm run type-check && npm run lint && npm run format:check"
+  },
+  "keywords": [
+    "webpack",
+    "eslint",
+    "prettier",
+    "stylelint",
+    "typescript",
+    "mfe",
+    "module-federation",
+    "build-tools",
+    "react",
+    "config"
+  ],
+  "author": "",
+  "license": "MIT",
+  "peerDependencies": {
+    "react": ">=18.0.0",
+    "react-dom": ">=18.0.0",
+    "typescript": ">=5.0.0",
+    "webpack": ">=5.0.0",
+    "webpack-cli": ">=5.0.0",
+    "webpack-dev-server": ">=5.0.0",
+    "eslint": ">=9.0.0",
+    "prettier": ">=3.0.0",
+    "stylelint": ">=16.0.0"
+  },
+  "peerDependenciesMeta": {
+    "webpack-dev-server": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "@babel/core": "^7.28.4",
+    "@babel/plugin-syntax-top-level-await": "^7.14.5",
+    "@babel/plugin-transform-class-properties": "^7.27.1",
+    "@babel/plugin-transform-private-methods": "^7.27.1",
+    "@babel/plugin-transform-private-property-in-object": "^7.27.1",
+    "@babel/preset-env": "^7.28.3",
+    "@babel/preset-react": "^7.27.1",
+    "@babel/preset-typescript": "^7.27.1",
+    "@module-federation/enhanced": "^0.19.1",
+    "@pmmmwh/react-refresh-webpack-plugin": "^0.6.1",
+    "@svgr/webpack": "^8.1.0",
+    "babel-loader": "^10.0.0",
+    "babel-plugin-transform-react-remove-prop-types": "^0.4.24",
+    "babel-plugin-transform-remove-console": "^6.9.4",
+    "babel-plugin-transform-remove-undefined": "^0.5.0",
+    "copy-webpack-plugin": "^13.0.1",
+    "css-loader": "^7.1.2",
+    "css-minimizer-webpack-plugin": "^7.0.2",
+    "cssnano": "^7.1.1",
+    "dotenv": "^17.2.3",
+    "external-remotes-plugin": "^1.0.0",
+    "html-webpack-plugin": "^5.6.4",
+    "mini-css-extract-plugin": "^2.9.4",
+    "postcss-loader": "^8.2.0",
+    "postcss-preset-env": "^10.4.0",
+    "react-refresh": "^0.18.0",
+    "sass": "^1.93.2",
+    "sass-loader": "^16.0.5",
+    "style-loader": "^4.0.0",
+    "terser-webpack-plugin": "^5.3.14",
+    "@eslint/js": "^9.36.0",
+    "@typescript-eslint/utils": "^8.45.0",
+    "eslint-config-prettier": "^10.1.8",
+    "postcss-scss": "^4.0.9",
+    "stylelint-config-standard": "^39.0.0",
+    "stylelint-config-standard-scss": "^16.0.0",
+    "typescript-eslint": "^8.45.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.6.2",
+    "@types/webpack": "^5.28.5",
+    "@types/webpack-bundle-analyzer": "^4.7.0",
+    "chokidar-cli": "^3.0.0",
+    "eslint": "^9.36.0",
+    "prettier": "^3.6.2",
+    "rimraf": "^6.0.1",
+    "stylelint": "^16.25.0",
+    "typescript": "^5.9.3",
+    "webpack": "^5.101.3",
+    "webpack-cli": "^6.0.1",
+    "webpack-dev-server": "^5.2.2"
+  },
+  "optionalDependencies": {
+    "webpack-bundle-analyzer": "^4.10.2"
+  }
+}

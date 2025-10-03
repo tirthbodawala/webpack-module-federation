@@ -6,6 +6,12 @@ node_modules/
 # Production build output
 dist/
 
+# tanstack router
+.tanstack/
+
+# MF types should be fetched everytime
+@mf-types/
+
 # Environment variables
 .env
 .env.local
@@ -68,7 +74,9 @@ tmp/
 temp/
 
 # Editor directories and files
-.vscode/
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
 .idea/
 *.swp
 *.swo

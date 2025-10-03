@@ -6,6 +6,12 @@ node_modules/
 # Production build output
 dist/
 
+# tanstack router
+.tanstack/
+
+# MF types should be fetched everytime
+@mf-types/
+
 # Environment variables
 .env
 .env.local

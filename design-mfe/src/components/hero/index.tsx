@@ -1,7 +1,7 @@
 import { Button, Container, Text, Title } from '@mantine/core';
 import { Dots } from './dots';
 import * as classes from './style.module.css';
-import { FC } from 'react';
+import type { FC } from 'react';
 
 export const Hero: FC<{ title: string, description: string }> = ({
   title,
