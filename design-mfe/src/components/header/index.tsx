@@ -9,7 +9,7 @@ import {
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { Link } from "@tanstack/react-router";
-import classes from "./style.module.css";
+import * as classes from "./style.module.css";
 import type { FC } from "react";
 
 export const HeaderMegaMenu: FC = () => {

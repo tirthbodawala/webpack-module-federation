@@ -9,8 +9,9 @@ dist/
 # tanstack router
 .tanstack/
 
-# MF types should be fetched everytime
+# Module Federation - generated types and cache
 @mf-types/
+.mf/
 
 # Environment variables
 .env

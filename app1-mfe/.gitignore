@@ -6,6 +6,10 @@ node_modules/
 # Production build output
 dist/
 
+# Module Federation - generated types and cache
+@mf-types/
+.mf/
+
 # Environment variables
 .env
 .env.local
