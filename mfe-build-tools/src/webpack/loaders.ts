@@ -75,7 +75,7 @@ function createScriptRule(isProd: boolean): RuleSetRule {
     exclude: /node_modules/, // Don't process node_modules for performance
     use: [
       {
-        loader: 'babel-loader',
+        loader: resolveModule('babel-loader'),
         options: createBabelOptions(isProd),
       },
     ],
@@ -304,7 +304,7 @@ function createSvgRule(isProd: boolean): RuleSetRule {
       {
         use: [
           {
-            loader: '@svgr/webpack', // Transform SVG to React component
+            loader: resolveModule('@svgr/webpack'), // Transform SVG to React component
             options: {
               svgoConfig: {
                 plugins: [
@@ -392,7 +392,7 @@ function createScssLoaders({
     createCssLoader({ isProd, withModules, importLoaders: 2, uniqueName }), // Process CSS imports and modules
     createPostCssLoader(isProd), // PostCSS transformations (autoprefixer, etc.)
     {
-      loader: 'sass-loader', // Compile SCSS to CSS
+      loader: resolveModule('sass-loader'), // Compile SCSS to CSS
       options: {
         sourceMap: !isProd, // Generate source maps in development
         sassOptions: { outputStyle: isProd ? 'compressed' : 'expanded' },
@@ -429,7 +429,7 @@ function createCssLoaders({
  * @returns CSS style loader
  */
 function getStyleLoader(isProd: boolean): string {
-  return isProd ? MiniCssExtractPlugin.loader : 'style-loader';
+  return isProd ? MiniCssExtractPlugin.loader : resolveModule('style-loader');
 }
 
 /**
@@ -492,7 +492,7 @@ function createCssLoader({
   }
 
   return {
-    loader: 'css-loader',
+    loader: resolveModule('css-loader'),
     options: baseOptions,
   };
 }
@@ -509,12 +509,12 @@ function createCssLoader({
  */
 function createPostCssLoader(isProd: boolean): RuleSetUseItem {
   return {
-    loader: 'postcss-loader',
+    loader: resolveModule('postcss-loader'),
     options: {
       postcssOptions: {
         plugins: [
-          'postcss-preset-env', // Autoprefixer and modern CSS polyfills
-          ...(isProd ? ['cssnano'] : []), // CSS minification in production
+          resolveModule('postcss-preset-env'), // Autoprefixer and modern CSS polyfills
+          ...(isProd ? [resolveModule('cssnano')] : []), // CSS minification in production
         ],
       },
       sourceMap: !isProd, // Generate source maps in development

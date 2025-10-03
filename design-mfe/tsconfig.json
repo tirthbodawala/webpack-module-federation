@@ -1,19 +1,8 @@
 {
-  "extends": "@crisil/ts-config/react.json",
+  "extends": "mfe-build-tools/typescript/react",
   "compilerOptions": {
-    "noPropertyAccessFromIndexSignature": false,
-    "plugins": [
-      {
-        "name": "typescript-plugin-css-modules",
-        "options": {
-          "classnameTransform": "asIs"
-        }
-      }
-    ]
+    "noPropertyAccessFromIndexSignature": false
   },
-  "include": [
-    "./src/**/*",
-    "./src/@types/declarations.d.ts"
-  ],
+  "include": ["src/**/*"],
   "exclude": ["node_modules"]
 }

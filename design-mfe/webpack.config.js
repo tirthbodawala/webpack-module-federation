@@ -1,10 +1,14 @@
+import { createConfig } from "mfe-build-tools/webpack";
 import webpack from "webpack";
-import { createConfig } from "webpack-react-config";
 
-const webpackConfig = createConfig(webpack, {
+export default createConfig(webpack, {
   uniqueName: 'design',
+  entry: './src/index.tsx',
+  htmlTemplate: './public/index.html',
   port: 4001,
   moduleFederation: {
+    name: 'design',
+    filename: 'remoteEntry.js',
     exposes: {
       "./Header": "./src/components/header/index.tsx",
       "./Hero": "./src/components/hero/index.tsx",
@@ -22,5 +26,3 @@ const webpackConfig = createConfig(webpack, {
     },
   },
 });
-
-export default webpackConfig;

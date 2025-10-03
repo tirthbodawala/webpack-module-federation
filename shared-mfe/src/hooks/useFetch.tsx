@@ -6,12 +6,13 @@ type UseFetchResult<T> = {
   loading: boolean;
 };
 
-function getTokenFromCookie(cookieName = "token") {
+function getTokenFromCookie(cookieName = "token"): string | null {
   if (typeof document === "undefined") return null;
   const match = document.cookie.match(
     new RegExp("(^| )" + cookieName + "=([^;]+)")
   );
-  return match ? decodeURIComponent(match[2]) : null;
+  if (!match || !match[2]) return null;
+  return decodeURIComponent(match[2]);
 }
 
 export function useFetch<T = any>(

@@ -1,11 +1,15 @@
-import { createConfig } from 'webpack-react-config';
+import { createConfig } from 'mfe-build-tools/webpack';
 import webpack from 'webpack';
 import { tanstackRouter } from '@tanstack/router-plugin/webpack';
 
-const webpackConfig = createConfig(webpack, {
+export default createConfig(webpack, {
   uniqueName: 'host',
+  entry: './src/index.tsx',
+  htmlTemplate: './public/index.html',
   port: 3000,
   moduleFederation: {
+    name: 'host',
+    filename: 'remoteEntry.js',
     remotes: {
       app1: 'app1@http://localhost:5001/mf-manifest.json',
       app2: 'app2@http://localhost:5002/mf-manifest.json',
@@ -25,5 +29,3 @@ const webpackConfig = createConfig(webpack, {
     }),
   ],
 });
-
-export default webpackConfig;

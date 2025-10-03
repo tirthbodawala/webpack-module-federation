@@ -139,7 +139,7 @@ export const theme = createTheme({
   components: {
     Button: {
       defaultProps: { radius: "md", size: "md" },
-      styles: (theme: any, params: any) => ({
+      styles: (theme: any) => ({
         root: {
           fontWeight: 600,
           boxShadow: theme.shadows.md,

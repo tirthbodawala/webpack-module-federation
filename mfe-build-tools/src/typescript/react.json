@@ -8,6 +8,21 @@
     "moduleResolution": "bundler",
     "jsx": "react-jsx",
     "allowSyntheticDefaultImports": true,
-    "noEmit": true
-  }
+    "noEmit": true,
+    "plugins": [
+      {
+        "name": "typescript-plugin-css-modules",
+        "options": {
+          "classnameTransform": "asIs"
+        }
+      }
+    ]
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx"
+  ],
+  "files": [
+    "./global.d.ts"
+  ]
 }

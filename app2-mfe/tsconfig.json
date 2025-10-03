@@ -1,21 +1,11 @@
 {
+  "extends": "mfe-build-tools/typescript/react",
   "compilerOptions": {
-    "target": "esnext",
-    "lib": ["DOM", "DOM.Iterable", "ESNext"],
-    "module": "ESNext",
-    "moduleResolution": "bundler",
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
-    "jsx": "react-jsx",
-    "isolatedModules": true,
-    "resolveJsonModule": true,
-    "strict": true,
-    "skipLibCheck": true,
-    "noEmit": true,
     "paths": {
       "shared/*": ["./@mf-types/shared/*"],
       "design/*": ["./@mf-types/design/*"]
     }
   },
-  "include": ["src"]
+  "include": ["src"],
+  "exclude": ["node_modules"]
 }

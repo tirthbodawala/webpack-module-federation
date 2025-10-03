@@ -1,5 +1,0 @@
-{
-  "extends": "mfe-build-tools/typescript/react",
-  "include": ["src/**/*"],
-  "exclude": ["node_modules"]
-}
